@@ -1,6 +1,6 @@
 # sensum
 
-Sensum make sentimental analysis possible thanks to the huggingface's transformers library https://github.com/huggingface/transformers
+Sensum make sentimental analysis possible thanks to the [huggingface's transformers library](https://github.com/huggingface/transformers)
 
 ## why this name?
 
