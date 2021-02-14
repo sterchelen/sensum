@@ -1,0 +1,6 @@
+POST http://localhost:8080/analysis
+Content-Type: application/json
+@load-sample.json
+POST http://localhost:8080/analysis
+Content-Type: application/json
+@load-sample-1.json
