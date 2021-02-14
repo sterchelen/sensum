@@ -167,5 +167,5 @@ During my test, I saw a lot of network traffic at the start of the app which cor
 I didn't find on the documentation how to cache the model, except that we have to contact the [huggingface's team](https://huggingface.co/transformers/installation.html#note-on-model-downloads-continuous-integration-or-large-scale-deployments).
 
 I had to downgrade the `huggingface` library version because of a `rust` borrow error [issue](https://github.com/huggingface/tokenizers/issues/537). I think it is due to the number of parallel requests I sent.
-So sticking to the latest version may help to improve performances.
+So once this issue resolved, upgrading to the latest version may help to improve performances.
 
