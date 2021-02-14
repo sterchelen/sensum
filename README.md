@@ -12,7 +12,7 @@ The aim of sensum is to make sentimental analysis possible via an http api. Depl
 
 ## business use case
 
-Data insights applications, to analyse blog post, tweet, facebook post, could use this api to extract their client's reputation.
+Data insights applications, to analyse blog post, tweet, facebook post, could use this api to extract their client' reputations.
 
 Is brand X has a positive reputation on twitter... 
 
