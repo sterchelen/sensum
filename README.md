@@ -10,6 +10,12 @@ Sensum make sentimental analysis possible thanks to the huggingface's transforme
 
 The aim of sensum is to make sentimental analysis possible via an http api. Deployable in a docker-ish environment.
 
+## business use case
+
+Data insights applications, to analyse blog post, tweet, facebook post, could use this api to extract their client's reputation.
+
+Is brand X has a positive reputation on twitter... 
+
 ## dependencies
 Lots of python stuff:
 - `python3` as python runtime
@@ -22,7 +28,7 @@ Lots of python stuff:
 ## api documentation
 ### Analysis
 ----
-  Returns json data about the sentimental analysis. The response array will be the same length as the sentences one; 
+  Returns json data about the sentimental analysis. The response array length is equal to the sentences one; 
 
 * **URL**
 
@@ -42,7 +48,10 @@ Lots of python stuff:
 * **Success Response:**
 
   * **Code:** 200 <br />
-    **Content:** `[{"label":"POSITIVE","score":0.9438539743423462},{"label":"NEGATIVE","score":0.9991174936294556}]`
+    **Content:** 
+    ```json
+    [{"label":"POSITIVE","score":0.9438539743423462},{"label":"NEGATIVE","score":0.9991174936294556}]
+    ```
  
 * **Error Response:**
 
@@ -53,7 +62,7 @@ Lots of python stuff:
 
   ```bash
   curl -X POST -H 'Content-Type: application/json' \
-  http://localhost:8081/analysis \
+  http://localhost:8080/analysis \
   -d '{"sentences":["Is linux the best operating system?", "SRE is treating infrastructure as a software problem"]}'
   ```
 
@@ -64,8 +73,9 @@ A script called `configure.sh` configures your development environment by creati
 and installing the dependencies thanks to the `requirements.txt` file.
 
 ### development mode
-You can run via the `api.py` file:
+You can run it via the `api.py` file:
 ```bash
+$ ./configure.sh
 $ python api.py
  * Serving Flask app "api" (lazy loading)
  * Environment: production
@@ -79,28 +89,28 @@ Or via `docker`:
 ```bash
 $ docker build . -t sensum
 ...
-$ docker run -p 8090:8080 sensum
+$ docker run -p 8080:8080 sensum
 ```
 
 ### gcp and app engine
-This api will not go to production. It is a proof of knowledge I would say. 
+This api isn't production-ready. I would say, it is a proof of knowledge. 
 
-First of all, using `kubernetes` would have been overkill. 
+Why not `kubernetes`?
 1. Because it is an experimental api
-2. Because the workload is very low, the need of scalability too.
+2. Because the workload is very low and the need of scalability too.
 3. If this would be a production-ready api I would reconsider the preceding statements.
 
 **Alternative:**
 
-I could have use `terraform` to build the infrastructure part. 
-Use `packer` to create instance image with the necessary dependencies, with a startup script to
+I could have used `terraform` to build the infrastructure part. 
+And `packer` to create instance image with the necessary dependencies and a startup script to
 retrieve the latest version of the api... Well there is a lot of solutions to this problem :)
 
 **!!!! I REPEAT THIS IS NOT A PRODUCTION-READY API !!!!**
 
 
 ### why app engine?
-Because we have `Dockerfile`, a faas solution make things easier and faster to deploy.
+Because we have a `Dockerfile`, a faas solution make things easier and faster to deploy.
 Just adding a `app.yaml` file to declare how to run it with `app engine` and we are good to go:
 
 ```yaml
@@ -140,7 +150,7 @@ Let's attack the api (10 req/sec):
 
 `vegeta attack -rate=10/s -targets=vegeta-target.list`
 
-Thanks to `cadvisor` on my own vm I could monitor how the container handle the load:
+Thanks to `cadvisor` on my own machine I could monitor how the container handle the load:
 
 CPU:
 ![cpu](cpu.png?raw=true "CPU")
@@ -148,14 +158,14 @@ CPU:
 Memory:
 ![memory](memory.png?raw=true "MEMORY")
 
-As I've expected, this api is cpu-bounded. The cpu load increase as I send more traffic. Whereas the memory stay constant.
-My assumption on why we are using at least 600MB, is that we load the json models file into memory.
+As I've expected, this api is cpu-bounded. The cpu load increase as I sent more traffic. Whereas the memory stay constant.
+My assumption on why we are using at least 600MB, is that we load the json model files into memory.
 
 
 ## things to improve
 During my test, I saw a lot of network traffic at the start of the app which corresponds to the models download. 
 I didn't find on the documentation how to cache the model, except that we have to contact the [huggingface's team](https://huggingface.co/transformers/installation.html#note-on-model-downloads-continuous-integration-or-large-scale-deployments).
 
-I had to downgrade the `huggingface` library version because of a `rust` borrow error [issue](https://github.com/huggingface/tokenizers/issues/537). I think is due to the number of parallel requests I sent.
-So sticking to the latest version may help to improve the performance.
+I had to downgrade the `huggingface` library version because of a `rust` borrow error [issue](https://github.com/huggingface/tokenizers/issues/537). I think it is due to the number of parallel requests I sent.
+So sticking to the latest version may help to improve performances.
 
